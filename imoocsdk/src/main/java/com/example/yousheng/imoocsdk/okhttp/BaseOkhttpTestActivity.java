@@ -4,6 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataHandle;
+import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
+import com.example.yousheng.imoocsdk.okhttp.request.CommonOkHttpClient;
+import com.example.yousheng.imoocsdk.okhttp.request.CommonRequest;
+import com.example.yousheng.imoocsdk.okhttp.response.CommonJsonCallback;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -49,5 +55,21 @@ public class BaseOkhttpTestActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void sendJsonTestRequest(){
+        CommonOkHttpClient.sendRequest(CommonRequest.createGetRequest("https://www.baidu.com",null),
+                new CommonJsonCallback(new DisposeDataHandle(new DisposeDataListener() {
+                    @Override
+                    public void onSuccess(Object responseObj) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Object reasonObj) {
+
+                    }
+                }))
+        );
     }
 }

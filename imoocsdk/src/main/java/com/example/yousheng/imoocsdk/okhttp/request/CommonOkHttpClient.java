@@ -1,6 +1,7 @@
 package com.example.yousheng.imoocsdk.okhttp.request;
 
 import com.example.yousheng.imoocsdk.okhttp.https.HttpsUtils;
+import com.example.yousheng.imoocsdk.okhttp.response.CommonJsonCallback;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +9,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -59,13 +59,13 @@ public class CommonOkHttpClient {
     /**
      * @function 发送具体的http/https请求
      * @param request
-     * @param callback
+     * @param commonJsonCallback
      * @return Call
      */
-    public static Call sendRequest(Request request, Callback callback){
+    public static Call sendRequest(Request request, CommonJsonCallback commonJsonCallback){
 
         Call call=mOkHttpClient.newCall(request);
-        call.enqueue(callback);
+        call.enqueue(commonJsonCallback);
 
         return call;
     }
