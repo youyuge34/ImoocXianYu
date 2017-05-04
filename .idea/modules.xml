@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ImoocXianYu.iml" filepath="$PROJECT_DIR$/ImoocXianYu.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imoocsdk/imoocsdk.iml" filepath="$PROJECT_DIR$/imoocsdk/imoocsdk.iml" />
     </modules>
   </component>
 </project>
