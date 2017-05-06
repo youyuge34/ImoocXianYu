@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
 import com.example.yousheng.imoocxianyu.R;
+import com.example.yousheng.imoocxianyu.adapter.CourseAdapter;
+import com.example.yousheng.imoocxianyu.module.recommand.BaseRecommandModel;
 import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
 
@@ -33,6 +35,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
     private TextView mCategoryView;
     private TextView mSearchView;
     private ImageView mLoadingView;
+
+    /**
+     * data
+     */
+    private CourseAdapter mAdapter;
+    private BaseRecommandModel mRecommandData;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +81,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
             @Override
             public void onSuccess(Object responseObj) {
                 Log.e(TAG, "onSuccess: "+responseObj.toString());
+                mRecommandData = (BaseRecommandModel) responseObj;
+                //更新UI
+                showSuccessView();
             }
 
             @Override
@@ -81,6 +92,22 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
             }
         });
 
+    }
+
+    /**
+     * 请求成功，显示listview主页
+     */
+    private void showSuccessView() {
+
+        //健壮性判断
+        if(mRecommandData != null && mRecommandData.data.list.size()>0){
+            mLoadingView.setVisibility(View.GONE);
+            mListView.setVisibility(View.VISIBLE);
+
+            //创建adapter
+            mAdapter = new CourseAdapter(mContext, mRecommandData.data.list);
+            mListView.setAdapter(mAdapter);
+        }
     }
 
 
