@@ -7,7 +7,7 @@ import okhttp3.Request;
 
 /**
  * Created by yousheng on 17/5/4.
- * @function 接受请求参数，为我们生成request对象
+ * @function 接受url和请求参数params，为我们生成request对象
  */
 
 public class CommonRequest {

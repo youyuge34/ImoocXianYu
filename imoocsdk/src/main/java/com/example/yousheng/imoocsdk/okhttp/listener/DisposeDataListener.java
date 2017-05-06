@@ -9,13 +9,13 @@ package com.example.yousheng.imoocsdk.okhttp.listener;
 
 public interface DisposeDataListener {
     /**
-     * 请求成功回调事件处理
+     * 请求成功回调事件处理,回调会直接返回一个string，或者返回一个已转换成实体类的obj
      */
     public void onSuccess(Object responseObj);
 
     /**
      * 请求失败回调事件处理
-     * @param reasonObj 实际会接受一个OkHttpException
+     * @param reasonObj 实际会回调返回一个OkHttpException
      */
     public void onFailure(Object reasonObj);
 }

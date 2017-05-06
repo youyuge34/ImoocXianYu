@@ -15,7 +15,9 @@ import okhttp3.Request;
 /**
  * Created by yousheng on 17/5/4.
  *
- * @function 请求request的发送，请求参数的配置，https的支持。
+ * @function 1、请求request的发送
+ *           2、请求参数的配置
+ *           3、https的支持
  */
 
 public class CommonOkHttpClient {

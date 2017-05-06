@@ -16,10 +16,16 @@ import okhttp3.Response;
 
 /**
  * Created by yousheng on 17/5/4.
- * @function 专门处理JSON的回调,实现了callback接口，相当于封装了一次，
+ * @function 实现了callback接口，相当于封装了一次，
  *           这样在实际调用时候只需传入CommonJsonCallback这个callback,
  *           并且需要实现DisposeDataHandle里的DisposeDataListener接口，
- *           这个接口里的方法实现与okhttp的api无关，所以以后okhttp的api改了也没事
+ *           这个接口里的方法实现与okhttp的api无关，所以以后okhttp的api改了也没事.
+ *
+ *           比起原来的callback，这个封装的改进：
+ *           1、自定义了callback的回调写法
+ *           2、对json的转换实体类支持
+ *           3、回调方法已发送到了UI线程
+ *           4、异常处理
  */
 
 public class CommonJsonCallback implements Callback {
