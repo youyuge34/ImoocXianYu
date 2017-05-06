@@ -1,5 +1,6 @@
 package com.example.yousheng.imoocxianyu.view.fragment;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 /**
@@ -9,5 +10,7 @@ import android.support.v4.app.Fragment;
  */
 
 public class BaseFragment extends Fragment {
+    //这样在子类中初始化后，随时可以调用到上下文
+    protected Activity mContext;
 
 }
