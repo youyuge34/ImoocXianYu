@@ -18,6 +18,7 @@ import com.example.yousheng.imoocxianyu.adapter.CourseAdapter;
 import com.example.yousheng.imoocxianyu.module.recommand.BaseRecommandModel;
 import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
+import com.example.yousheng.imoocxianyu.view.home.HomeHeaderLayout;
 
 /**
  * Created by yousheng on 17/5/4.
@@ -103,6 +104,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
         if(mRecommandData != null && mRecommandData.data.list.size()>0){
             mLoadingView.setVisibility(View.GONE);
             mListView.setVisibility(View.VISIBLE);
+
+            //添加头布局
+            mListView.addHeaderView(new HomeHeaderLayout(mContext,mRecommandData.data.head));
 
             //创建adapter
             mAdapter = new CourseAdapter(mContext, mRecommandData.data.list);

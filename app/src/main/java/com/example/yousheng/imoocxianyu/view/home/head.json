@@ -1,0 +1,35 @@
+    //头布局服务器数据样例
+{
+  "head": {
+    "ads": [
+      "http://img.mukewang.com/54bf7e1f000109c506000338-590-330.jpg",
+      "http://upload.techweb.com.cn/2015/0114/1421211858103.jpg",
+      "http://img1.cache.netease.com/catchpic/A/A0/A0153E1AEDA115EAE7061A0C7EBB69D2.jpg",
+      "http://image.tianjimedia.com/uploadImages/2015/202/27/57RF8ZHG8A4T_5020a2a4697650b89c394237ba9ffbb45fe8555a2cbec-6O6nmI_fw658.jpg"
+    ],
+    "middle": [
+      "http://img.mukewang.com/54f55ee60001850f05000280.jpg",
+      "http://img7.doubanio.com/view/note/large/public/p26832324.jpg",
+      "http://img.mukewang.com/546570370001f8a906000338-590-330.jpg",
+      "http://img.mukewang.com/55f93f980001f52125001408-590-330.jpg"
+    ],
+    "footer": [
+      {
+        "title": "5个新ios课程",
+        "info": "jack大拿发布",
+        "from": "来自上海的讲师",
+        "imageOne": "http://i7.hexunimg.cn/2015-07-07/177346079.jpg",
+        "imageTwo": "http://imgsrc.baidu.com/forum/w%3D580/sign=2ca8123a261f95caa6f592bef9167fc5/bc1cae51f81986188dd8f8c049ed2e738ad4e6da.jpg",
+        "destationUrl": "http://www.imooc.com/learn/677"
+      },
+      {
+        "title": "3个新android课程",
+        "info": "herry-android高级开发",
+        "from": "来自北京的讲师",
+        "imageOne": "http://imgsrc.baidu.com/forum/w%3D580/sign=4e0ee1bcd2c8a786be2a4a065709c9c7/bc71953eb13533fae99ad268abd3fd1f40345bf5.jpg",
+        "imageTwo": "http://images.cnitblog.com/news/66372/201412/041520272014384.png",
+        "destationUrl": "http://www.imooc.com/learn/690"
+      }
+    ]
+  }
+}
