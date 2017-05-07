@@ -15,6 +15,7 @@ import com.example.yousheng.imoocsdk.imageloader.ImageLoaderManger;
 import com.example.yousheng.imoocsdk.util.Utils;
 import com.example.yousheng.imoocxianyu.R;
 import com.example.yousheng.imoocxianyu.module.recommand.RecommandBodyValue;
+import com.example.yousheng.imoocxianyu.util.Util;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,9 @@ public class CourseAdapter extends BaseAdapter {
 
     /**
      * @function 不同类型的item标识，根据json中的标识，在getview()中加载不同类型的item布局
+     * TYPE_ONE 为图片列表
+     * TYPE_TWO 为单图
+     * TYPE_THREE 为无限viewPager
      */
     private static final int CARD_COUNT = 4;
     private static final int VIDOE_TYPE = 0x00;
@@ -90,7 +94,7 @@ public class CourseAdapter extends BaseAdapter {
         //获取item种类
         int type = getItemViewType(position);
         //获取当前位置item的服务器数据
-        RecommandBodyValue value= mData.get(position);
+        RecommandBodyValue value = mData.get(position);
 
         //若缓存布局为空，则开始新建
         if (convertView == null) {
@@ -121,6 +125,10 @@ public class CourseAdapter extends BaseAdapter {
                     break;
                 case CARD_TYPE_THREE:
                     mViewHolder = new ViewHolder();
+                    convertView = mInflate.inflate(R.layout.item_product_card_three_layout, parent, false);
+                    mViewHolder.mViewPager = (ViewPager) convertView.findViewById(R.id.pager);
+
+
                     break;
                 case VIDOE_TYPE:
                     mViewHolder = new ViewHolder();
@@ -133,7 +141,7 @@ public class CourseAdapter extends BaseAdapter {
         }
 
         //开始绑定数据到view层
-        switch (type){
+        switch (type) {
             case CARD_TYPE_ONE:
                 mImageLoader.displayImage(mViewHolder.mLogoView, value.logo);
                 mViewHolder.mTitleView.setText(value.title);
@@ -146,7 +154,7 @@ public class CourseAdapter extends BaseAdapter {
                 //因为会布局回收复用，所以要先清空原先的图片布局
                 mViewHolder.mProductLayout.removeAllViews();
                 //动态遍历添加imageview进入水平scrollview中
-                for(String url: value.url){
+                for (String url : value.url) {
                     mViewHolder.mProductLayout.addView(createImageView(url));
                 }
 
@@ -162,7 +170,14 @@ public class CourseAdapter extends BaseAdapter {
                 mImageLoader.displayImage(mViewHolder.mLogoView, value.logo);
                 mImageLoader.displayImage(mViewHolder.mProductView, value.url.get(0));
                 break;
+
             case CARD_TYPE_THREE:
+                //将服务器拼接过的一组数据转拆分成多组数据的集合,供给viewpager使用
+                ArrayList<RecommandBodyValue> valueList = Util.handlePagerData(value);
+                mViewHolder.mViewPager.setAdapter(new HotSalePagerAdapter(mContext, valueList));
+
+                //为了向左也能无限滑动，让初始的item位置在中间
+                mViewHolder.mViewPager.setCurrentItem(valueList.size() * 100);
                 break;
 
         }
@@ -170,9 +185,9 @@ public class CourseAdapter extends BaseAdapter {
     }
 
     /**
-     * @function 动态代码创建imageView
      * @param url
      * @return
+     * @function 动态代码创建imageView
      */
     private ImageView createImageView(String url) {
         ImageView imageView = new ImageView(mContext);
@@ -181,11 +196,11 @@ public class CourseAdapter extends BaseAdapter {
         //用别的layout的param，不会报错，但是特殊的param识别不出
         LinearLayout.LayoutParams params = new LinearLayout
                 //LayoutParams接收的是a fixed size in pixels，所以需要把dp转成px传入
-                .LayoutParams(Utils.dip2px(mContext,100), ViewGroup.LayoutParams.MATCH_PARENT);
+                .LayoutParams(Utils.dip2px(mContext, 100), ViewGroup.LayoutParams.MATCH_PARENT);
 
-        params.leftMargin= Utils.dip2px(mContext,5);
+        params.leftMargin = Utils.dip2px(mContext, 5);
         imageView.setLayoutParams(params);
-        mImageLoader.displayImage(imageView,url);
+        mImageLoader.displayImage(imageView, url);
         return imageView;
     }
 
