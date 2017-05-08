@@ -177,7 +177,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     SurfaceHolder surfaceHolder;
 
     /**
-     * 闪光灯点击事件
+     *  @function 完成我们的各种点击事件
      */
     private OnClickListener click = new OnClickListener() {
 
@@ -188,9 +188,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 finish();
             } else if (id == R.id.flash_btn) {
                 if (!isFlash) {
+                    //打开闪光灯
                     CameraManager.get().turnLightOn();
                 } else {
-
                     CameraManager.get().turnLightOff();
                 }
                 isFlash = !isFlash;
@@ -198,6 +198,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 // 打开手机中的相册
                 Intent innerIntent = new Intent(Intent.ACTION_GET_CONTENT); // "android.intent.action.GET_CONTENT"
                 innerIntent.setType("image/*");
+                //再次包装，使得弹出的框的title为"选择二维码图片"
                 Intent wrapperIntent = Intent.createChooser(innerIntent, "选择二维码图片");
                 startActivityForResult(wrapperIntent, REQUEST_CODE);
             } else if (id == R.id.qrcode_btn) {
@@ -521,21 +522,23 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             uri = data.getData();
+            //启动新线程去完成图片扫码
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-
+                    //scanningImage中解析图片，返回result
                     Result result = scanningImage(uri);
                     if (result == null) {
                         Looper.prepare();
                         Toast.makeText(getApplicationContext(), "图片格式有误", Toast.LENGTH_SHORT).show();
                         Looper.loop();
                     } else {
-                        // 数据返回，在这里去处理扫码结果
+                        // 数据返回，在这里去处理相册识别二维码的结果
                         String recode = (result.toString());
                         Intent data = new Intent();
-                        data.putExtra("result", recode);
-                        setResult(300, data);
+                        data.putExtra("SCAN_RESULT", recode);
+                        //再次返回数据给上一个活动
+                        setResult(Activity.RESULT_OK, data);
                         finish();
                     }
                 }
@@ -543,6 +546,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         }
     }
 
+    /**
+     * 解析相册选中图片
+     * @param path
+     * @return Result结果，包含了string结果
+     */
     protected Result scanningImage(Uri path) {
         if (path == null || path.equals("")) {
             return null;

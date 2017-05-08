@@ -38,7 +38,9 @@ import java.util.Vector;
 /**
  * This class handles all the messaging which comprises the state machine for
  * activity_qrcode_capture_layout.
- * 工作线程解码完成后会给此UI Handler发送消息，此UI Handler接受消息取出bitmap并且调用CaptureActivity.handleDecode
+ * 工作线程解码完成后会给此UI Handler发送消息，此UI Handler接受消息取出result和bitmap，
+ * 并将string结果设置为captureActivity.setResult参数，结束captureActivity，
+ * 然后就能在HomeFragment的onActivityResult中获取string结果
  *
  * @author dswitkin@google.com (Daniel Switkin)
  */
@@ -80,6 +82,8 @@ public final class CaptureActivityHandler extends Handler {
         } else if (message.what == R.id.restart_preview) {
             Log.d(TAG, "Got restart preview message");
             restartPreviewAndDecode();
+            //将string结果设置为captureActivity.setResult参数，结束captureActivity，
+            // 然后就能在HomeFragment的onActivityResult中获取string结果
         } else if (message.what == R.id.decode_succeeded) {
             Log.d(TAG, "Got decode succeeded message");
             state = State.SUCCESS;

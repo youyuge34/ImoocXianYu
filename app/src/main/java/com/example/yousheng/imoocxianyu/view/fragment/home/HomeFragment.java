@@ -1,5 +1,6 @@
 package com.example.yousheng.imoocxianyu.view.fragment.home;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
 import com.example.yousheng.imoocxianyu.R;
@@ -139,6 +141,22 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
         super.doOpenCamera();
         Intent intent = new Intent(mContext, CaptureActivity.class);
         startActivityForResult(intent,REQUEST_QRCODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_QRCODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    String code = data.getStringExtra("SCAN_RESULT");
+                    if (code.contains("http") || code.contains("https")) {
+                        Toast.makeText(mContext, code, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mContext, code, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
     }
 
     @Override

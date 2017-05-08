@@ -35,7 +35,7 @@ import com.google.zxing.common.HybridBinarizer;
 import java.util.Hashtable;
 
 /**
- * @fuction 后台处理线程的handler，解码完毕后发送Bitmap通知CaptureActivity主线程的handler
+ * @fuction 后台处理线程的handler，解码完毕后发送result和Bitmap通知CaptureActivity主线程的handler
  */
 final class DecodeHandler extends Handler {
 
@@ -54,6 +54,7 @@ final class DecodeHandler extends Handler {
     public void handleMessage(Message message) {
         if (message.what == R.id.decode) {
             // Log.d(TAG, "Got decode message");
+            //获取到了相机拍到的二维码数据，开始解析
             decode((byte[]) message.obj, message.arg1, message.arg2);
         } else if (message.what == R.id.quit) {
             Looper.myLooper().quit();
