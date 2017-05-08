@@ -1,5 +1,6 @@
 package com.example.yousheng.imoocxianyu.view.fragment.home;
 
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,10 +16,12 @@ import android.widget.TextView;
 import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
 import com.example.yousheng.imoocxianyu.R;
 import com.example.yousheng.imoocxianyu.adapter.CourseAdapter;
+import com.example.yousheng.imoocxianyu.constant.Constant;
 import com.example.yousheng.imoocxianyu.module.recommand.BaseRecommandModel;
 import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
 import com.example.yousheng.imoocxianyu.view.home.HomeHeaderLayout;
+import com.example.yousheng.imoocxianyu.zxing.app.CaptureActivity;
 
 /**
  * Created by yousheng on 17/5/4.
@@ -117,7 +120,25 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.qrcode_view:
+                if (hasPermission(Constant.HARDWEAR_CAMERA_PERMISSION)) {
+                    doOpenCamera();
+                } else {
+                    requestPermission(Constant.HARDWEAR_CAMERA_CODE, Constant.HARDWEAR_CAMERA_PERMISSION);
+                }
+                break;
+        }
+    }
 
+    /**
+     * 点击二维码图标，若是请求允许则调用CaptureActivity活动
+     */
+    @Override
+    public void doOpenCamera() {
+        super.doOpenCamera();
+        Intent intent = new Intent(mContext, CaptureActivity.class);
+        startActivityForResult(intent,REQUEST_QRCODE);
     }
 
     @Override
