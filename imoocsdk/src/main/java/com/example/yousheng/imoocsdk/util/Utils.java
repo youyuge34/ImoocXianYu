@@ -34,6 +34,7 @@ public class Utils {
         return (int) (pxValue / scale);
     }
 
+    //获取当前view显示在屏幕里的百分比
     public static int getVisiblePercent(View pView) {
         if (pView != null && pView.isShown()) {
             DisplayMetrics displayMetrics = pView.getContext().getResources().getDisplayMetrics();
