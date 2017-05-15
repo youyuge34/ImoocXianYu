@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
@@ -110,6 +111,8 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
         }
     };
 
+    private ADFrameImageLoadListener mFrameLoadListener;
+
     public CostumeVideoView(Context context, ViewGroup parentContainer) {
         super(context);
         mParentContainer = parentContainer;
@@ -186,6 +189,10 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
         listener = listener1;
     }
 
+    public void setFrameLoadListener(ADFrameImageLoadListener frameLoadListener) {
+        this.mFrameLoadListener = frameLoadListener;
+    }
+
     //点击后消耗掉事件，父容器就不会执行onTouchEvent，防止与父容器发生冲突
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -206,6 +213,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
     @Override
     public void onPrepared(MediaPlayer mp) {
         LogUtils.i(TAG, "onPrepared ");
+        showPlayView();
         mediaPlayer = mp;
         if (mediaPlayer != null) {
             mediaPlayer.setOnBufferingUpdateListener(this);
@@ -299,9 +307,20 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     }
 
+
+
     //---------下面是几个功能性方法---------------
     //---------下面是几个功能性方法---------------
     //---------下面是几个功能性方法---------------
+
+    //在slot逻辑层设定
+    public void setDataSource(String url) {
+        this.mUrl = url;
+    }
+
+    public void setFrameURI(String url) {
+        mFrameURI = url;
+    }
 
     /**
      * 点击onclick()与textureView可available后调用，构造方法中不一定textureView初始化好了
@@ -408,17 +427,58 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     //销毁自定义view和里面一些消耗内存的东西如监听
     public void destroy() {
-
+        LogUtils.d(TAG, " do destroy");
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.setOnSeekCompleteListener(null);
+            this.mediaPlayer.stop();
+            this.mediaPlayer.release();
+            this.mediaPlayer = null;
+        }
+        setCurrentPlayState(STATE_IDLE);
+        mCurrentCount = 0;
+        setIsComplete(false);
+        setIsRealPause(false);
+        unRegisterBroadcastReceiver();
+        mHandler.removeCallbacksAndMessages(null); //release all message and runnable
+        showPauseView(false); //除了播放和loading外其余任何状态都显示pause
     }
 
     //跳到指定点播放，用于小屏转大屏时续播用
     public void seekAndResume(int position) {
-
+        if (mediaPlayer != null) {
+            showPauseView(true);
+            entryResumeState();
+            mediaPlayer.seekTo(position);
+            mediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+                @Override
+                public void onSeekComplete(MediaPlayer mp) {
+                    LogUtils.d(TAG, "do seek and resume");
+                    mediaPlayer.start();
+                    mHandler.sendEmptyMessage(TIME_MSG);
+                }
+            });
+        }
     }
 
     //跳到指定点暂停
     public void seekAndPause(int position) {
-
+        if (this.playerState != STATE_PLAYING) {
+            return;
+        }
+        showPauseView(false);
+        setCurrentPlayState(STATE_PAUSING);
+        if (isPlaying()) {
+            mediaPlayer.seekTo(position);
+            //因为seekTo是耗时操作，不知道什么时候跳转完毕，所以用OnSeekComplete接口
+            mediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+                @Override
+                public void onSeekComplete(MediaPlayer mp) {
+                    LogUtils.d(TAG, "do seek and pause");
+                    mediaPlayer.pause();
+                    mHandler.removeCallbacksAndMessages(null);
+                }
+            });
+        }
     }
 
     public synchronized void checkMediaPlayer() {
@@ -506,17 +566,30 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
         playerState = state;
     }
 
-    private boolean isPlaying() {
+    public boolean isPlaying() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             return true;
         }
         return false;
     }
 
+    public boolean isRealPause() {
+        return mIsRealPause;
+    }
+
+    public boolean isComplete() {
+        return mIsComplete;
+    }
+
+    public boolean isFrameHidden() {
+        return mFrameView.getVisibility() == View.VISIBLE ? false : true;
+    }
+
+
     /**
      * @return the current position in milliseconds
      */
-    private int getCurrentPosition() {
+    public int getCurrentPosition() {
         if (mediaPlayer != null) {
             return mediaPlayer.getCurrentPosition();
         }
@@ -533,30 +606,21 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-
-    }
-
-
-    /**
-     * @function 供slot层来实现具体点击逻辑, 具体逻辑还会变，
-     * 如果对UI的点击没有具体监测的话可以不回调
-     */
-    public interface ADVideoPlayerListener {
-        void onBufferUpdate(int time);
-
-        void onClickFullScreenBtn();
-
-        void onClickVideo();
-
-        void onClickBackBtn();
-
-        void onClickPlay();
-
-        void onAdVideoLoadSuccess();
-
-        void onAdVideoLoadFailed();
-
-        void onAdVideoLoadComplete();
+        if (v == this.mMiniPlayBtn) {
+            if (this.playerState == STATE_PAUSING) {
+                if (Utils.getVisiblePercent(mParentContainer)
+                        > SDKConstant.VIDEO_SCREEN_PERCENT) {
+                    resume();
+                    this.listener.onClickPlay();
+                }
+            } else {
+                load();
+            }
+        } else if (v == this.mFullBtn) {
+            this.listener.onClickFullScreenBtn();
+        } else if (v == mVideoView) {
+            this.listener.onClickVideo();
+        }
     }
 
     private void registerBroadcastReceiver() {
@@ -600,6 +664,44 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
                     break;
             }
         }
+    }
+
+    /**
+     * @function 供slot层来实现具体点击逻辑, 具体逻辑还会变，
+     * 如果对UI的点击没有具体监测的话可以不回调
+     */
+    public interface ADVideoPlayerListener {
+        void onBufferUpdate(int time);
+
+        void onClickFullScreenBtn();
+
+        void onClickVideo();
+
+        void onClickBackBtn();
+
+        void onClickPlay();
+
+        void onAdVideoLoadSuccess();
+
+        void onAdVideoLoadFailed();
+
+        void onAdVideoLoadComplete();
+    }
+
+    public interface ADFrameImageLoadListener {
+
+        void onStartFrameLoad(String url, ImageLoaderListener listener);
+    }
+
+
+
+    public interface ImageLoaderListener {
+        /**
+         * 如果图片下载不成功，传null
+         *
+         * @param loadedImage
+         */
+        void onLoadingComplete(Bitmap loadedImage);
     }
 
 }
