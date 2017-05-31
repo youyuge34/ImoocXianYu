@@ -149,27 +149,7 @@ public class CourseAdapter extends BaseAdapter {
                     mViewHolder.mFooterView = (TextView) convertView.findViewById(R.id.item_footer_view);
                     mViewHolder.mShareView = (ImageView) convertView.findViewById(R.id.item_share_view);
 
-                    //视频api第一步：为对应布局创建播放器api层
-                    mAdsdkContext = new VideoAdContext(mViewHolder.mVieoContentLayout,
-                            new Gson().toJson(value), null);
-                    mAdsdkContext.setAdResultListener(new AdContextInterface() {
-                        @Override
-                        public void onAdSuccess() {
-                            LogUtils.d("test1","mAdsdkContext回调成功");
-                        }
 
-                        @Override
-                        public void onAdFailed() {
-                            LogUtils.d("test1","mAdsdkContext回调失败");
-                        }
-
-                        @Override
-                        public void onClickVideo(String url) {
-                            Intent intent = new Intent(mContext, AdBrowserActivity.class);
-                            intent.putExtra(AdBrowserActivity.KEY_URL, url);
-                            mContext.startActivity(intent);
-                        }
-                    });
                     break;
 
             }
@@ -180,6 +160,36 @@ public class CourseAdapter extends BaseAdapter {
 
         //开始绑定数据到view层
         switch (type) {
+            case VIDOE_TYPE:
+                mImageLoader.displayImage(mViewHolder.mLogoView, value.logo);
+                mViewHolder.mTitleView.setText(value.title);
+                mViewHolder.mInfoView.setText(value.info.concat(mContext.getString(R.string.tian_qian)));
+                mViewHolder.mFooterView.setText(value.text);
+
+                //视频api第一步：为对应布局创建播放器api层
+                mAdsdkContext = new VideoAdContext(mViewHolder.mVieoContentLayout,
+                        new Gson().toJson(value), null);
+                LogUtils.d("MraidVideoView", value.resource);
+                mAdsdkContext.setAdResultListener(new AdContextInterface() {
+                    @Override
+                    public void onAdSuccess() {
+                        LogUtils.d("test1","mAdsdkContext回调成功");
+                    }
+
+                    @Override
+                    public void onAdFailed() {
+                        LogUtils.d("test1","mAdsdkContext回调失败");
+                    }
+
+                    @Override
+                    public void onClickVideo(String url) {
+                        Intent intent = new Intent(mContext, AdBrowserActivity.class);
+                        intent.putExtra(AdBrowserActivity.KEY_URL, url);
+                        mContext.startActivity(intent);
+                    }
+                });
+
+                break;
             case CARD_TYPE_ONE:
                 mImageLoader.displayImage(mViewHolder.mLogoView, value.logo);
                 mViewHolder.mTitleView.setText(value.title);

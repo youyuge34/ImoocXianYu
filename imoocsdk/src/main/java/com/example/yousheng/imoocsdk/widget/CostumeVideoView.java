@@ -121,6 +121,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
         initData();
         initView();
         registerBroadcastReceiver();
+        LogUtils.d(TAG,"1.构造器初始化完毕");
     }
 
     private void initData() {
@@ -212,12 +213,12 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
      */
     @Override
     public void onPrepared(MediaPlayer mp) {
-        LogUtils.i(TAG, "onPrepared ");
+        LogUtils.i(TAG, "7.播放器onPrepared ");
         showPlayView();
         mediaPlayer = mp;
         if (mediaPlayer != null) {
             mediaPlayer.setOnBufferingUpdateListener(this);
-            //充实次数清零
+            //重试次数清零
             mCurrentCount = 0;
             if (listener != null) {
                 //接口通知外部，加载成功了
@@ -235,7 +236,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
         //来回切换页面时，只有 >50,且满足自动播放条件才自动播放
         {
             setCurrentPlayState(STATE_PAUSING);
-            LogUtils.d(TAG, "decideCanPlay->resume()");
+            LogUtils.d(TAG, "8.decideCanPlay->resume()");
             resume();
         } else {
             LogUtils.d(TAG, "decideCanPlay->pause()");
@@ -293,9 +294,11 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
      */
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        LogUtils.i(TAG, "onSurfaceTextureAvailable");
+        LogUtils.i(TAG, "2.onSurfaceTextureAvailable");
         videoSurface = new Surface(surface);
+        LogUtils.d(TAG,"3.SurfaceTexture创建完毕");
         checkMediaPlayer();
+        LogUtils.d(TAG,"5.mediaPlayer加载surface");
         mediaPlayer.setSurface(videoSurface);
         load();
     }
@@ -330,11 +333,11 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
     }
 
     /**
-     * 点击onclick()与textureView可available后调用，构造方法中不一定textureView初始化好了
+     * 点击onclick()与textureView的available回调中调用，构造方法中不一定textureView初始化好了
      * 加载我们的视频url，有异常就stop()循环重试3次，没异常就告诉播放器去准备，播放器回调onPrepare()
      */
     public void load() {
-        LogUtils.e(TAG, "load()");
+        LogUtils.e(TAG, "6.load()");
         //不空闲则不load
         if (this.playerState != STATE_IDLE) {
             return;
@@ -345,8 +348,8 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
         try {
 
             setCurrentPlayState(STATE_IDLE);
-            checkMediaPlayer(); //新建播放器并设置textureView
-            LogUtils.d(TAG, "checked");
+            checkMediaPlayer(); //检查播放器是否新建（texture的available回调中已调用过）
+//            LogUtils.d(TAG, "checked");
             mute(true);
             //设置播放源
             mediaPlayer.setDataSource(this.mUrl);
@@ -393,16 +396,16 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     //恢复播放,之后的情况是播放完成或者失败，分别进入回调方法编写
     public void resume() {
-        LogUtils.d(TAG, "resume()");
-//        LogUtils.d(TAG, "playerState-> " + playerState);
         if (playerState != STATE_PAUSING) {
             return;
         }
+        LogUtils.d(TAG, "10.resume()");
         if (!isPlaying()) {
             //让状态值变为播放中的
             entryResumeState();
             mediaPlayer.setOnSeekCompleteListener(null);
             mediaPlayer.start();
+            LogUtils.d(TAG,"11.resume()--->mediaPlayer.start();");
             mHandler.sendEmptyMessage(TIME_MSG);
             showPauseView(true);
         } else {
@@ -513,7 +516,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     public synchronized void checkMediaPlayer() {
         if (mediaPlayer == null) {
-            LogUtils.d(TAG, "createMediaPlayer");
+            LogUtils.d(TAG, "4.createMediaPlayer");
             mediaPlayer = createMediaPlayer(); //每次都创建一个新的mediaPlayer
         }
     }
@@ -571,6 +574,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     //显示三个小圆点的读取动画
     private void showLoadingView() {
+        LogUtils.d(TAG, "showLoadingView");
         mFullBtn.setVisibility(View.GONE);
         mLoadingBar.setVisibility(View.VISIBLE);
         AnimationDrawable anim = (AnimationDrawable) mLoadingBar.getBackground();
