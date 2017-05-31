@@ -27,7 +27,7 @@ import com.example.yousheng.imoocsdk.widget.CostumeVideoView.ADVideoPlayerListen
 
 /**
  * @author: qndroid
- * @function: 全屏显示视频,全屏后将原先的video实例从view tree中移除，放入dialog的根布局中
+ * @function: 全屏显示视频, 全屏后将原先的video实例从view tree中移除，放入dialog的根布局中
  * @date: 16/6/7
  */
 public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
@@ -61,6 +61,7 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
 
     /**
      * 主要来初始化控件
+     *
      * @param savedInstanceState
      */
     @Override
@@ -111,12 +112,17 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
         mVideoView.setVideoPlayListener(this);
         mVideoView.mute(false);
         mParentView.addView(mVideoView);
+//        mRootView.setVisibility(View.VISIBLE);
+//        mVideoView.setVisibility(View.VISIBLE);
         mParentView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
+                LogUtils.d(TAG,"initVideoView--->onPreDraw");
                 mParentView.getViewTreeObserver().removeOnPreDrawListener(this);
                 prepareScene();
                 runEnterAnimation();
+                mRootView.setVisibility(View.VISIBLE);
+                mVideoView.setVisibility(View.VISIBLE);
                 return true;
             }
         });
@@ -126,6 +132,7 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
      * 和view的onVisibilityChanged类似，焦点状态改变时回调
      * Called when the window containing this view gains or loses focus
      * 只有dialog就绪，获得焦点时候才能继续播放，太早调用resume会失效
+     *
      * @param hasFocus
      */
     @Override
@@ -133,10 +140,12 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
         LogUtils.i(TAG, "onWindowFocusChanged");
         mVideoView.isShowFullBtn(false); //防止第一次，有些手机仍显示全屏按钮
         if (!hasFocus) {
+            LogUtils.d(TAG,"onWindowFocusChanged--->!hasFocus没有焦点");
             //未获得焦点时候
             mPosition = mVideoView.getCurrentPosition();
             mVideoView.pauseForFullScreen();
         } else {
+            LogUtils.d(TAG,"onWindowFocusChanged--->有焦点");
             //获得焦点时
             if (isFirst) {
                 //为了适配某些手机不执行resume继续播放，若dialog首次创建且首次获得焦点
@@ -206,10 +215,15 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
     @Override
     public void onClickBackBtn() {
         runExitAnimator();
+//        if (mListener != null) {
+//            //回调slot层处理
+//            mListener.getCurrentPlayPosition(mVideoView.getCurrentPosition());
+//        }
     }
 
     //准备动画所需数据
     private void prepareScene() {
+        LogUtils.d(TAG,"prepareScene");
         mEndBundle = Utils.getViewProperty(mVideoView);
         /**
          * 将desationview移到originalview位置处
@@ -221,6 +235,7 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
 
     //准备入场动画
     private void runEnterAnimation() {
+        LogUtils.d(TAG,"runEnterAnimation");
         mVideoView.animate()
                 .setDuration(200)
                 .setInterpolator(new LinearInterpolator())
@@ -234,8 +249,9 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
                 .start();
     }
 
-    //准备出场动画
+    //准备下场动画
     private void runExitAnimator() {
+        LogUtils.d(TAG,"runExitAnimator");
         //ViewPropertyAnimator类的属性动画
         mVideoView.animate()
                 .setDuration(200)
@@ -277,7 +293,7 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
     public void onAdVideoLoadComplete() {
         try {
             int position = mVideoView.getDuration() / SDKConstant.MILLION_UNIT;
-            ReportManager.sueReport(mXAdInstance.endMonitor, true, position);
+//            ReportManager.sueReport(mXAdInstance.endMonitor, true, position);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -293,7 +309,7 @@ public class VideoFullDialog extends Dialog implements ADVideoPlayerListener {
     public void onBufferUpdate(int time) {
         try {
             if (mXAdInstance != null) {
-                ReportManager.suReport(mXAdInstance.middleMonitor, time / SDKConstant.MILLION_UNIT);
+//                ReportManager.suReport(mXAdInstance.middleMonitor, time / SDKConstant.MILLION_UNIT);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,11 +2,13 @@ package com.example.yousheng.imoocsdk.core.video;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.example.yousheng.imoocsdk.activity.AdBrowserActivity;
+import com.example.yousheng.imoocsdk.constant.LogUtils;
 import com.example.yousheng.imoocsdk.constant.SDKConstant;
 import com.example.yousheng.imoocsdk.core.AdParameters;
 import com.example.yousheng.imoocsdk.module.AdValue;
@@ -35,6 +37,7 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
     private AdSDKSlotListener mSlotListener;
     private boolean canPause = false; //是否可自动暂停标志位
     private int lastArea = 0; //防止将要滑入滑出时播放器的状态改变
+    private static final String TAG = "VideoAdSlot";
 
     public VideoAdSlot(AdValue adInstance, AdSDKSlotListener slotListener, CostumeVideoView.ADFrameImageLoadListener frameLoadListener) {
         mXAdInstance = adInstance;
@@ -102,11 +105,14 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
         if (mVideoView != null) {
             mVideoView.resume();
             if (isPlaying()) {
-                sendSUSReport(true); //发自动播放监测
+//                sendSUSReport(true); //发自动播放监测
             }
         }
     }
 
+    /**
+     * 判断是否自动播放
+     */
     public void updateAdInScrollView() {
         int currentArea = Utils.getVisiblePercent(mParentView);
         //小于0表示未出现在屏幕上，不做任何处理
@@ -161,6 +167,8 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
      */
     @Override
     public void onClickFullScreenBtn() {
+        //获取videoview在当前界面的属性
+        Bundle bundle = Utils.getViewProperty(mParentView);
         //将播放器从view tree中移除
         mParentView.removeView(mVideoView);
         //创建全屏播放dialog
@@ -178,8 +186,10 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
                 bigPlayComplete();
             }
         });
+        dialog.setViewBundle(bundle); //为Dialog设置播放器数据Bundle对象
         dialog.setSlotListener(mSlotListener);
         dialog.show();
+        LogUtils.d(TAG,"onClickFullScreenBtn->show()");
     }
 
     private void backToSmallMode(int position) {
@@ -257,7 +267,7 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
     @Override
     public void onBufferUpdate(int time) {
         try {
-            ReportManager.suReport(mXAdInstance.middleMonitor, time / SDKConstant.MILLION_UNIT);
+//            ReportManager.suReport(mXAdInstance.middleMonitor, time / SDKConstant.MILLION_UNIT);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -305,7 +315,7 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
      */
     private void sendSUSReport(boolean isAuto) {
         try {
-            ReportManager.susReport(mXAdInstance.startMonitor, isAuto);
+//            ReportManager.susReport(mXAdInstance.startMonitor, isAuto);
         } catch (Exception e) {
             e.printStackTrace();
         }

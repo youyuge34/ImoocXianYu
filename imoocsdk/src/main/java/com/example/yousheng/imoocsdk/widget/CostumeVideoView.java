@@ -230,11 +230,17 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     //屏幕里的显示面积>50%，就播放
     private void decideCanPlay() {
+        LogUtils.d(TAG, "decideCanPlay");
         if (Utils.getVisiblePercent(mParentContainer) > SDKConstant.VIDEO_SCREEN_PERCENT)
-            //来回切换页面时，只有 >50,且满足自动播放条件才自动播放
+        //来回切换页面时，只有 >50,且满足自动播放条件才自动播放
+        {
+            setCurrentPlayState(STATE_PAUSING);
+            LogUtils.d(TAG, "decideCanPlay->resume()");
             resume();
-        else
+        } else {
+            LogUtils.d(TAG, "decideCanPlay->pause()");
             pause();
+        }
     }
 
     @Override
@@ -258,6 +264,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     /**
      * 播放器异常的方法回调
+     *
      * @param mp
      * @param what
      * @param extra
@@ -267,8 +274,8 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
     public boolean onError(MediaPlayer mp, int what, int extra) {
         this.playerState = STATE_ERROR;
         //次数没到3就去stop里重新加载
-        if(mCurrentCount>=LOAD_TOTAL_COUNT){
-            if(listener != null){
+        if (mCurrentCount >= LOAD_TOTAL_COUNT) {
+            if (listener != null) {
                 listener.onAdVideoLoadFailed();
             }
             showPauseView(false);
@@ -286,15 +293,16 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
      */
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        LogUtils.d(TAG,"onSurfaceTextureAvailable");
+        LogUtils.i(TAG, "onSurfaceTextureAvailable");
         videoSurface = new Surface(surface);
+        checkMediaPlayer();
+        mediaPlayer.setSurface(videoSurface);
         load();
-
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
+        LogUtils.i(TAG, "onSurfaceTextureSizeChanged");
     }
 
     @Override
@@ -306,7 +314,6 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
     }
-
 
 
     //---------下面是几个功能性方法---------------
@@ -327,22 +334,26 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
      * 加载我们的视频url，有异常就stop()循环重试3次，没异常就告诉播放器去准备，播放器回调onPrepare()
      */
     public void load() {
+        LogUtils.e(TAG, "load()");
         //不空闲则不load
         if (this.playerState != STATE_IDLE) {
             return;
         }
-
+        LogUtils.d(TAG, "do play url = " + this.mUrl);
+        //显示读取的三个小圆点动画
+        showLoadingView();
         try {
-            //显示读取的三个小圆点动画
-            showLoadingView();
+
             setCurrentPlayState(STATE_IDLE);
             checkMediaPlayer(); //新建播放器并设置textureView
+            LogUtils.d(TAG, "checked");
+            mute(true);
             //设置播放源
-            mediaPlayer.setDataSource(mUrl);
+            mediaPlayer.setDataSource(this.mUrl);
             //播放器开始异步加载,回调onprepared
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
-            LogUtils.e(TAG, e.getMessage());
+            LogUtils.e(TAG, "load() fail: " + e.getMessage());
             stop(); //error以后重新调用stop加载
         }
     }
@@ -382,10 +393,11 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     //恢复播放,之后的情况是播放完成或者失败，分别进入回调方法编写
     public void resume() {
+        LogUtils.d(TAG, "resume()");
+//        LogUtils.d(TAG, "playerState-> " + playerState);
         if (playerState != STATE_PAUSING) {
             return;
         }
-        LogUtils.d(TAG, "resume()");
         if (!isPlaying()) {
             //让状态值变为播放中的
             entryResumeState();
@@ -461,6 +473,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     //跳到指定点播放，用于小屏转大屏时续播用
     public void seekAndResume(int position) {
+        LogUtils.d(TAG,"seekAndResume---->");
         if (mediaPlayer != null) {
             showPauseView(true);
             entryResumeState();
@@ -470,6 +483,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
                 public void onSeekComplete(MediaPlayer mp) {
                     LogUtils.d(TAG, "do seek and resume");
                     mediaPlayer.start();
+//                    resume();
                     mHandler.sendEmptyMessage(TIME_MSG);
                 }
             });
@@ -499,14 +513,15 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     public synchronized void checkMediaPlayer() {
         if (mediaPlayer == null) {
+            LogUtils.d(TAG, "createMediaPlayer");
             mediaPlayer = createMediaPlayer(); //每次都创建一个新的mediaPlayer
         }
     }
 
     private MediaPlayer createMediaPlayer() {
-        if (mediaPlayer != null) {
-            mediaPlayer = new MediaPlayer();
-        }
+        mediaPlayer = new MediaPlayer();
+        LogUtils.d(TAG, "new MediaPlayer()");
+
         mediaPlayer.reset();
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
@@ -518,6 +533,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
         } else {
             stop();
         }
+
         return mediaPlayer;
     }
 
@@ -537,6 +553,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     /**
      * 显示或者不显示暂停界面
+     *
      * @param show true表示不暂停，FALSE表示暂停
      */
     private void showPauseView(boolean show) {
@@ -564,6 +581,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
     }
 
     private void showPlayView() {
+        LogUtils.d(TAG, "showPlayView");
         mLoadingBar.clearAnimation();
         mLoadingBar.setVisibility(View.GONE);
         mMiniPlayBtn.setVisibility(View.GONE);
@@ -722,7 +740,6 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
         void onStartFrameLoad(String url, ImageLoaderListener listener);
     }
-
 
 
     public interface ImageLoaderListener {

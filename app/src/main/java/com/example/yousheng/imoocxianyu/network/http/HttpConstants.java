@@ -33,7 +33,7 @@ public class HttpConstants {
     /**
      * 首页产品请求接口
      */
-    public static String HOME_RECOMMAND = ROOT_URL + "home_data_test123.json";
+    public static String HOME_RECOMMAND = ROOT_URL + "home_data.json";
 
     /**
      * 课程详情接口

@@ -1,6 +1,7 @@
 package com.example.yousheng.imoocxianyu.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +12,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.yousheng.imoocsdk.activity.AdBrowserActivity;
+import com.example.yousheng.imoocsdk.constant.LogUtils;
+import com.example.yousheng.imoocsdk.core.AdContextInterface;
+import com.example.yousheng.imoocsdk.core.video.VideoAdContext;
 import com.example.yousheng.imoocsdk.imageloader.ImageLoaderManger;
 import com.example.yousheng.imoocsdk.util.Utils;
 import com.example.yousheng.imoocxianyu.R;
 import com.example.yousheng.imoocxianyu.module.recommand.RecommandBodyValue;
 import com.example.yousheng.imoocxianyu.util.Util;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -44,6 +50,7 @@ public class CourseAdapter extends BaseAdapter {
     private ArrayList<RecommandBodyValue> mData;
     private ViewHolder mViewHolder;
     private ImageLoaderManger mImageLoader;
+    private VideoAdContext mAdsdkContext;
 
     public CourseAdapter(Context mContext, ArrayList<RecommandBodyValue> mData) {
         this.mContext = mContext;
@@ -128,10 +135,41 @@ public class CourseAdapter extends BaseAdapter {
                     convertView = mInflate.inflate(R.layout.item_product_card_three_layout, parent, false);
                     mViewHolder.mViewPager = (ViewPager) convertView.findViewById(R.id.pager);
 
-
                     break;
+
                 case VIDOE_TYPE:
+                    //显示video卡片
                     mViewHolder = new ViewHolder();
+                    convertView = mInflate.inflate(R.layout.item_video_layout, parent, false);
+                    mViewHolder.mVieoContentLayout = (RelativeLayout)
+                            convertView.findViewById(R.id.video_ad_layout);
+                    mViewHolder.mLogoView = (CircleImageView) convertView.findViewById(R.id.item_logo_view);
+                    mViewHolder.mTitleView = (TextView) convertView.findViewById(R.id.item_title_view);
+                    mViewHolder.mInfoView = (TextView) convertView.findViewById(R.id.item_info_view);
+                    mViewHolder.mFooterView = (TextView) convertView.findViewById(R.id.item_footer_view);
+                    mViewHolder.mShareView = (ImageView) convertView.findViewById(R.id.item_share_view);
+
+                    //视频api第一步：为对应布局创建播放器api层
+                    mAdsdkContext = new VideoAdContext(mViewHolder.mVieoContentLayout,
+                            new Gson().toJson(value), null);
+                    mAdsdkContext.setAdResultListener(new AdContextInterface() {
+                        @Override
+                        public void onAdSuccess() {
+                            LogUtils.d("test1","mAdsdkContext回调成功");
+                        }
+
+                        @Override
+                        public void onAdFailed() {
+                            LogUtils.d("test1","mAdsdkContext回调失败");
+                        }
+
+                        @Override
+                        public void onClickVideo(String url) {
+                            Intent intent = new Intent(mContext, AdBrowserActivity.class);
+                            intent.putExtra(AdBrowserActivity.KEY_URL, url);
+                            mContext.startActivity(intent);
+                        }
+                    });
                     break;
 
             }
@@ -184,6 +222,13 @@ public class CourseAdapter extends BaseAdapter {
         return convertView;
     }
 
+    //视频api第二步：自动播放方法
+    public void updateAdInScrollView() {
+        if (mAdsdkContext != null) {
+            mAdsdkContext.updateAdInScrollView();
+        }else LogUtils.d("test1","mAdsdkContext为null");
+    }
+
     /**
      * @param url
      * @return
@@ -202,6 +247,10 @@ public class CourseAdapter extends BaseAdapter {
         imageView.setLayoutParams(params);
         mImageLoader.displayImage(imageView, url);
         return imageView;
+    }
+
+    public void destroy(){
+        mAdsdkContext.destroy();
     }
 
     //用来缓存控件

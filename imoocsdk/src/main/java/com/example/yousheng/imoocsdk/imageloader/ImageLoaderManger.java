@@ -67,7 +67,7 @@ public class ImageLoaderManger {
                 .tasksProcessingOrder(QueueProcessingType.LIFO) //设置图片加载和显示队列处理的类型 默认为QueueProcessingType.FIFO
                 .defaultDisplayImageOptions(getDisplayOptions())  //更改默认图片加载显示配置，实际调用时不指定则会用此
                 .imageDownloader(new BaseImageDownloader(context, CONNECTION_TIME_OUT, READ_TIME_OUT))//设置图片下载器
-                .writeDebugLogs() //debug时会输出日志
+//                .writeDebugLogs() //debug时会输出日志
                 .build();
 
         //用我们的配置去初始化imageLoader实例
