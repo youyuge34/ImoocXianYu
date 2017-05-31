@@ -185,7 +185,7 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
     }
 
     //设置监听的回调接口
-    public void setVedioPlayListener(ADVideoPlayerListener listener1) {
+    public void setVideoPlayListener(ADVideoPlayerListener listener1) {
         listener = listener1;
     }
 
@@ -361,6 +361,22 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
             }
         }
         this.showPauseView(false);
+        mHandler.removeCallbacksAndMessages(null);
+    }
+
+    //全屏不显示暂停状态,后续可以整合，不必单独出一个方法
+    public void pauseForFullScreen() {
+        if (playerState != STATE_PLAYING) {
+            return;
+        }
+        LogUtils.d(TAG, "do full pause");
+        setCurrentPlayState(STATE_PAUSING);
+        if (isPlaying()) {
+            mediaPlayer.pause();
+            if (!this.canPlay) {
+                mediaPlayer.seekTo(0);
+            }
+        }
         mHandler.removeCallbacksAndMessages(null);
     }
 
@@ -564,6 +580,20 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
 
     private void setCurrentPlayState(int state) {
         playerState = state;
+    }
+
+    /**
+     * true is no voice
+     *
+     * @param mute
+     */
+    public void mute(boolean mute) {
+        LogUtils.d(TAG, "mute");
+        isMute = mute;
+        if (mediaPlayer != null && this.audioManager != null) {
+            float volume = isMute ? 0.0f : 1.0f;
+            mediaPlayer.setVolume(volume, volume);
+        }
     }
 
     public boolean isPlaying() {

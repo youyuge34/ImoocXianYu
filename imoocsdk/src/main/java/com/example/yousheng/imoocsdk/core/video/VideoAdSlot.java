@@ -13,6 +13,7 @@ import com.example.yousheng.imoocsdk.module.AdValue;
 import com.example.yousheng.imoocsdk.report.ReportManager;
 import com.example.yousheng.imoocsdk.util.Utils;
 import com.example.yousheng.imoocsdk.widget.CostumeVideoView;
+import com.example.yousheng.imoocsdk.widget.VideoFullDialog;
 
 /**
  * Created by yousheng on 17/5/14.
@@ -49,7 +50,7 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
             mVideoView.setDataSource(mXAdInstance.resource);
             mVideoView.setFrameURI(mXAdInstance.thumb);
             mVideoView.setFrameLoadListener(frameImageLoadListener);
-            mVideoView.setVedioPlayListener(this);
+            mVideoView.setVideoPlayListener(this);
         }
         RelativeLayout paddingView = new RelativeLayout(mContext);
         paddingView.setBackgroundColor(mContext.getResources().getColor(android.R.color.black));
@@ -154,10 +155,57 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
         mContext = null;
         mXAdInstance = null;
     }
+
+    /**
+     * 点击播放器的全屏按钮后会回调这个方法
+     */
     @Override
     public void onClickFullScreenBtn() {
+        //将播放器从view tree中移除
+        mParentView.removeView(mVideoView);
+        //创建全屏播放dialog
+        VideoFullDialog dialog = new VideoFullDialog(mContext, mVideoView, mXAdInstance, mVideoView.getCurrentPosition());
+        dialog.setListener(new VideoFullDialog.FullToSmallListener() {
+            //dialog点击返回键之后的事件回调
+            @Override
+            public void getCurrentPlayPosition(int position) {
+                backToSmallMode(position);
+            }
 
+            //dialog播放完成后的事件回调
+            @Override
+            public void playComplete() {
+                bigPlayComplete();
+            }
+        });
+        dialog.setSlotListener(mSlotListener);
+        dialog.show();
     }
+
+    private void backToSmallMode(int position) {
+        if (mVideoView.getParent() == null) {
+            mParentView.addView(mVideoView);
+        }
+        mVideoView.setTranslationY(0); //防止动画导致偏离父容器
+        mVideoView.isShowFullBtn(true);
+        mVideoView.mute(true); //小屏静音
+        mVideoView.setVideoPlayListener(this); //重新设监听
+        mVideoView.seekAndResume(position);
+        canPause = true; // 标为可自动暂停
+    }
+
+    private void bigPlayComplete() {
+        if (mVideoView.getParent() == null) {
+            mParentView.addView(mVideoView);
+        }
+        mVideoView.setTranslationY(0); //防止动画导致偏离父容器
+        mVideoView.isShowFullBtn(true);
+        mVideoView.mute(true);
+        mVideoView.setVideoPlayListener(this);
+        mVideoView.seekAndPause(0);
+        canPause = false;
+    }
+
 
     @Override
     public void onClickVideo() {
@@ -200,7 +248,7 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
 
     @Override
     public void onAdVideoLoadSuccess() {
-        if(mSlotListener!=null){
+        if (mSlotListener != null) {
             mSlotListener.onAdVideoLoadSuccess();
         }
 
@@ -218,7 +266,7 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
 
     @Override
     public void onAdVideoLoadFailed() {
-        if(mSlotListener!=null){
+        if (mSlotListener != null) {
             mSlotListener.onAdVideoLoadFailed();
         }
         //加载失败全部回到初始状态
@@ -227,7 +275,7 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
 
     @Override
     public void onAdVideoLoadComplete() {
-        if(mSlotListener!=null){
+        if (mSlotListener != null) {
             mSlotListener.onAdVideoLoadComplete();
         }
 
@@ -266,14 +314,14 @@ public class VideoAdSlot implements CostumeVideoView.ADVideoPlayerListener {
     //传递消息到appcontext层,第二层接口回调
     public interface AdSDKSlotListener {
 
-        public ViewGroup getAdParent();
+        ViewGroup getAdParent();
 
-        public void onAdVideoLoadSuccess();
+        void onAdVideoLoadSuccess();
 
-        public void onAdVideoLoadFailed();
+        void onAdVideoLoadFailed();
 
-        public void onAdVideoLoadComplete();
+        void onAdVideoLoadComplete();
 
-        public void onClickVideo(String url);
+        void onClickVideo(String url);
     }
 }
