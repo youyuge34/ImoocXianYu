@@ -28,6 +28,7 @@ import android.widget.RelativeLayout;
 import com.example.yousheng.imoocsdk.R;
 import com.example.yousheng.imoocsdk.constant.LogUtils;
 import com.example.yousheng.imoocsdk.constant.SDKConstant;
+import com.example.yousheng.imoocsdk.core.AdParameters;
 import com.example.yousheng.imoocsdk.util.Utils;
 
 /**
@@ -232,7 +233,8 @@ public class CostumeVideoView extends RelativeLayout implements View.OnClickList
     //屏幕里的显示面积>50%，就播放
     private void decideCanPlay() {
         LogUtils.d(TAG, "decideCanPlay");
-        if (Utils.getVisiblePercent(mParentContainer) > SDKConstant.VIDEO_SCREEN_PERCENT)
+        if (Utils.canAutoPlay(getContext(),
+                AdParameters.getCurrentSetting()) && Utils.getVisiblePercent(mParentContainer) > SDKConstant.VIDEO_SCREEN_PERCENT)
         //来回切换页面时，只有 >50,且满足自动播放条件才自动播放
         {
             setCurrentPlayState(STATE_PAUSING);

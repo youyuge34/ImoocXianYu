@@ -87,8 +87,7 @@ public class Utils {
                 result = false;
                 break;
         }
-//        return result;
-        return true;
+        return result;
     }
     /**
      * 获取对应应用的版本号
