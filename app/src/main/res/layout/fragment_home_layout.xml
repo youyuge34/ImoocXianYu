@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_fed952"
+        android:background="@drawable/bg_home_search"
         android:padding="8dp"
     >
         <TextView

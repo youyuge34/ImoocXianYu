@@ -12,7 +12,7 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/default_user_avatar"
     />
 
@@ -99,9 +99,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/divider"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:text="来自北京"
         android:textColor="@android:color/holo_blue_light"
         android:textSize="15sp"
@@ -113,12 +113,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@id/divider"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:text="来自北京"
         android:textColor="@color/color_bfbfbf"
         android:textSize="15sp"
     />
+    <View
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:layout_below="@id/item_zan_view"/>
 </RelativeLayout>
 

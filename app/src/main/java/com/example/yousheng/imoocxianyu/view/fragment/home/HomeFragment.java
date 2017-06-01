@@ -132,6 +132,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
             });
 
 
+
         }
     }
 
@@ -182,7 +183,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
 
     @Override
     public void onDestroy() {
+        if(mAdapter!=null){
+            mAdapter.destroy();
+        }
         super.onDestroy();
-        mAdapter.destroy();
     }
 }

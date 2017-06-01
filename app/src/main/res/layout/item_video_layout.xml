@@ -67,5 +67,9 @@
         android:text="杨洋郑爽“聊”破次元盛,甜蜜演绎《微微一笑很优酷》优酷独家热播中"
         android:textColor="@color/color_333333"
         android:textSize="16sp"/>
+    <View
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:layout_below="@id/item_footer_view"/>
 </RelativeLayout>
 

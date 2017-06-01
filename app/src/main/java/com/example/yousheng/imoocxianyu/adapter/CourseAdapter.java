@@ -173,12 +173,12 @@ public class CourseAdapter extends BaseAdapter {
                 mAdsdkContext.setAdResultListener(new AdContextInterface() {
                     @Override
                     public void onAdSuccess() {
-                        LogUtils.d("test1","mAdsdkContext回调成功");
+                        LogUtils.d("test1", "mAdsdkContext回调成功");
                     }
 
                     @Override
                     public void onAdFailed() {
-                        LogUtils.d("test1","mAdsdkContext回调失败");
+                        LogUtils.d("test1", "mAdsdkContext回调失败");
                     }
 
                     @Override
@@ -236,7 +236,7 @@ public class CourseAdapter extends BaseAdapter {
     public void updateAdInScrollView() {
         if (mAdsdkContext != null) {
             mAdsdkContext.updateAdInScrollView();
-        }else LogUtils.d("test1","mAdsdkContext为null");
+        } else LogUtils.d("test1", "mAdsdkContext为null");
     }
 
     /**
@@ -259,8 +259,10 @@ public class CourseAdapter extends BaseAdapter {
         return imageView;
     }
 
-    public void destroy(){
-        mAdsdkContext.destroy();
+    public void destroy() {
+        if (mAdsdkContext != null) {
+            mAdsdkContext.destroy();
+        }
     }
 
     //用来缓存控件
