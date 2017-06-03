@@ -25,6 +25,7 @@ import okhttp3.Response;
 
 public class BaseOkhttpTestActivity extends AppCompatActivity {
 
+    //原始使用okhttp的步骤
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +58,7 @@ public class BaseOkhttpTestActivity extends AppCompatActivity {
         });
     }
 
+    //封装后的使用步骤
     private void sendJsonTestRequest(){
         CommonOkHttpClient.sendRequest(CommonRequest.createGetRequest("https://www.baidu.com",null),
                 new CommonJsonCallback(new DisposeDataHandle(new DisposeDataListener() {
@@ -71,5 +73,22 @@ public class BaseOkhttpTestActivity extends AppCompatActivity {
                     }
                 }))
         );
+
+        //默认使用CommonJsonCallback
+        CommonOkHttpClient.get(CommonRequest.createGetRequest("url",null),
+                new DisposeDataHandle(new DisposeDataListener() {
+                    @Override
+                    public void onSuccess(Object responseObj) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Object reasonObj) {
+
+                    }
+                }));
+
     }
+
+
 }

@@ -236,7 +236,8 @@ public class CourseAdapter extends BaseAdapter {
     public void updateAdInScrollView() {
         if (mAdsdkContext != null) {
             mAdsdkContext.updateAdInScrollView();
-        } else LogUtils.d("test1", "mAdsdkContext为null");
+        }
+//        else LogUtils.d("test1", "mAdsdkContext为null");
     }
 
     /**

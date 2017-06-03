@@ -6,6 +6,7 @@ import com.example.yousheng.imoocsdk.okhttp.request.CommonOkHttpClient;
 import com.example.yousheng.imoocsdk.okhttp.request.CommonRequest;
 import com.example.yousheng.imoocsdk.okhttp.request.RequestParams;
 import com.example.yousheng.imoocxianyu.module.recommand.BaseRecommandModel;
+import com.example.yousheng.imoocxianyu.module.update.UpdateModel;
 
 /**
  * Created by yousheng on 17/5/6.
@@ -29,6 +30,10 @@ public class RequestCenter {
 
     public static void requestRecommandData(DisposeDataListener listener) {
         RequestCenter.postRequest(HttpConstants.HOME_RECOMMAND, null, listener, BaseRecommandModel.class);
+    }
+
+    public static void checkUpdate(DisposeDataListener listener){
+        RequestCenter.postRequest(HttpConstants.CHECK_UPDATE,null, listener, UpdateModel.class);
     }
 
 }

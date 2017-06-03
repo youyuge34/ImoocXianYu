@@ -1,5 +1,9 @@
 package com.example.yousheng.imoocxianyu.util;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
 import com.example.yousheng.imoocxianyu.module.recommand.RecommandBodyValue;
 
 import java.util.ArrayList;
@@ -40,7 +44,32 @@ public class Util {
 
             values.add(tempValue);
         }
-
         return values;
+    }
+
+    //获取version code
+    public static int getVersionCode(Context context) {
+        int versionCode = 1;
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
+            versionCode = pi.versionCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionCode;
+    }
+
+    //获取version name
+    public static String getVersionName(Context context) {
+        String versionName = "1.0.0";
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
+            versionName = pi.versionName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionName;
     }
 }
