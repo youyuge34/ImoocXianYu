@@ -49,6 +49,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.LoginActivity" />
 
         <!-- 二维码相关 -->
         <activity
@@ -58,7 +59,8 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".activity.SettingActivity" />
 
-        <service android:name="service.update.UpdateService"
+
+        <service android:name=".service.update.UpdateService"
             android:exported="false"/>
     </application>
 

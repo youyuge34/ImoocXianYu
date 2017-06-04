@@ -1,10 +1,15 @@
 package com.example.yousheng.imoocxianyu.view.fragment.home;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,16 +19,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.yousheng.imoocsdk.constant.LogUtils;
+import com.example.yousheng.imoocsdk.imageloader.ImageLoaderManger;
 import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
 import com.example.yousheng.imoocxianyu.R;
+import com.example.yousheng.imoocxianyu.activity.LoginActivity;
 import com.example.yousheng.imoocxianyu.activity.SettingActivity;
+import com.example.yousheng.imoocxianyu.manager.UserManager;
 import com.example.yousheng.imoocxianyu.module.update.UpdateModel;
 import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
+import com.example.yousheng.imoocxianyu.service.update.UpdateService;
 import com.example.yousheng.imoocxianyu.util.Util;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import service.update.UpdateService;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by yousheng on 17/5/4.
@@ -37,6 +47,7 @@ public class MineFragment extends BaseFragment implements OnClickListener{
     private View mContentView;
     private RelativeLayout mLoginLayout;
     private CircleImageView mPhotoView;
+    private CircleImageView mUserPhotoView;
     private TextView mLoginInfoView;
     private TextView mLoginView;
     private RelativeLayout mLoginedLayout;
@@ -47,13 +58,18 @@ public class MineFragment extends BaseFragment implements OnClickListener{
     private TextView mQrCodeView;
     private TextView mUpdateView;
 
+    //登陆广播的广播接收器
+    private LoginBroadcastReceiver loginBroadcastReceiver =
+            new LoginBroadcastReceiver();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-
+        registerLoginBroadcast();
     }
+
+
 
     @Nullable
     @Override
@@ -72,6 +88,9 @@ public class MineFragment extends BaseFragment implements OnClickListener{
         //默认头像
         mPhotoView = (CircleImageView) mContentView.findViewById(R.id.photo_view);
         mPhotoView.setOnClickListener(this);
+        //登陆后的头像
+        mUserPhotoView = (CircleImageView) mContentView.findViewById(R.id.user_photo_view);
+        mUserPhotoView.setOnClickListener(this);
         //马上登陆按钮
         mLoginView = (TextView) mContentView.findViewById(R.id.login_view);
         mLoginView.setOnClickListener(this);
@@ -90,6 +109,12 @@ public class MineFragment extends BaseFragment implements OnClickListener{
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unRegisterLoginBroadcast();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.video_setting_view:
@@ -99,6 +124,9 @@ public class MineFragment extends BaseFragment implements OnClickListener{
             case R.id.update_view:
                 checkVersion();
                 break;
+
+            case R.id.login_view:
+                mContext.startActivity(new Intent(mContext, LoginActivity.class));
         }
     }
 
@@ -146,5 +174,35 @@ public class MineFragment extends BaseFragment implements OnClickListener{
                 Toast.makeText(mContext,"请求失败，请重试",Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void registerLoginBroadcast() {
+        IntentFilter filter = new IntentFilter(LoginActivity.LOGIN_ACTION);
+        LocalBroadcastManager.getInstance(mContext).
+                registerReceiver(loginBroadcastReceiver,filter);
+    }
+
+    private void unRegisterLoginBroadcast(){
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(loginBroadcastReceiver);
+    }
+
+    /**
+     * 接收登陆成功后发送来的消息，并更新UI
+     */
+    private class LoginBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (UserManager.getInstance().hasLogined()) {
+                //更新我们的fragment
+                if (mLoginedLayout.getVisibility() == View.GONE) {
+                    mLoginLayout.setVisibility(View.GONE);
+                    mLoginedLayout.setVisibility(View.VISIBLE);
+                    mUserNameView.setText(UserManager.getInstance().getUser().data.name);
+                    mTickView.setText(UserManager.getInstance().getUser().data.tick);
+                    Log.d(TAG, "onReceive: "+UserManager.getInstance().getUser().data.photoUrl);
+                    ImageLoaderManger.getInstance(mContext).displayImage(mUserPhotoView, UserManager.getInstance().getUser().data.photoUrl);
+                }
+            }
+        }
     }
 }

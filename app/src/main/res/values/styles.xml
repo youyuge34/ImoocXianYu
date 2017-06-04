@@ -10,4 +10,9 @@
 
     <style name="AppTheme" parent="AppBaseTheme"/>
 
+    <style name="LoadingDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 </resources>

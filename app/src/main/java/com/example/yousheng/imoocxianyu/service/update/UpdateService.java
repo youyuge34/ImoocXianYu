@@ -1,4 +1,4 @@
-package service.update;
+package com.example.yousheng.imoocxianyu.service.update;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -15,6 +15,7 @@ import com.example.yousheng.imoocsdk.constant.LogUtils;
 import com.example.yousheng.imoocxianyu.R;
 
 import java.io.File;
+
 
 
 public class UpdateService extends Service {

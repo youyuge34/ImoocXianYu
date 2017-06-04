@@ -7,6 +7,7 @@ import com.example.yousheng.imoocsdk.okhttp.request.CommonRequest;
 import com.example.yousheng.imoocsdk.okhttp.request.RequestParams;
 import com.example.yousheng.imoocxianyu.module.recommand.BaseRecommandModel;
 import com.example.yousheng.imoocxianyu.module.update.UpdateModel;
+import com.example.yousheng.imoocxianyu.module.user.User;
 
 /**
  * Created by yousheng on 17/5/6.
@@ -32,8 +33,18 @@ public class RequestCenter {
         RequestCenter.postRequest(HttpConstants.HOME_RECOMMAND, null, listener, BaseRecommandModel.class);
     }
 
-    public static void checkUpdate(DisposeDataListener listener){
-        RequestCenter.postRequest(HttpConstants.CHECK_UPDATE,null, listener, UpdateModel.class);
+    public static void checkUpdate(DisposeDataListener listener) {
+        RequestCenter.postRequest(HttpConstants.CHECK_UPDATE, null, listener, UpdateModel.class);
+    }
+
+    public static void loginIn(String user, String password, DisposeDataListener listener) {
+        RequestParams params = new RequestParams();
+        params.put("user", user);
+        params.put("password", password);
+        //本来的发送登陆方式
+//        RequestCenter.postRequest(HttpConstants.LOGIN, params, listener, User.class);
+        //因为没有服务器，模拟登陆方式，返回固定数据
+        RequestCenter.postRequest(HttpConstants.LOGIN, null, listener, User.class);
     }
 
 }
