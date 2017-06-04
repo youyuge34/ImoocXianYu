@@ -1,6 +1,6 @@
 package com.example.yousheng.imoocxianyu.view;
 
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import com.example.yousheng.imoocxianyu.R;
  * Created by yousheng on 17/6/4.
  */
 
-public class LoadingDialog extends ProgressDialog {
+public class LoadingDialog extends Dialog {
     private Context mContext;
     ImageView imageView;
 

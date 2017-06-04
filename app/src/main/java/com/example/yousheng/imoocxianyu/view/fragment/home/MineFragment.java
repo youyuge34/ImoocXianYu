@@ -29,6 +29,7 @@ import com.example.yousheng.imoocxianyu.module.update.UpdateModel;
 import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
 import com.example.yousheng.imoocxianyu.service.update.UpdateService;
 import com.example.yousheng.imoocxianyu.util.Util;
+import com.example.yousheng.imoocxianyu.view.MyQrCodeDialog;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -39,7 +40,7 @@ import static android.content.ContentValues.TAG;
  * Created by yousheng on 17/5/4.
  */
 
-public class MineFragment extends BaseFragment implements OnClickListener{
+public class MineFragment extends BaseFragment implements OnClickListener {
 
     /**
      * UI
@@ -70,11 +71,10 @@ public class MineFragment extends BaseFragment implements OnClickListener{
     }
 
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mContentView = inflater.inflate(R.layout.fragment_mine_layout,container,false);
+        mContentView = inflater.inflate(R.layout.fragment_mine_layout, container, false);
         initView();
         return mContentView;
     }
@@ -116,7 +116,7 @@ public class MineFragment extends BaseFragment implements OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.video_setting_view:
                 mContext.startActivity(new Intent(mContext, SettingActivity.class));
                 break;
@@ -126,43 +126,57 @@ public class MineFragment extends BaseFragment implements OnClickListener{
                 break;
 
             case R.id.login_view:
-                mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                //未登陆，则跳轉到登陸页面
+                if (!UserManager.getInstance().hasLogined()) {
+                    mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                }
+                break;
+
+            case R.id.my_qrcode_view:
+                if (!UserManager.getInstance().hasLogined()) {
+                    Toast.makeText(mContext,"请先登陆!",Toast.LENGTH_SHORT).show();
+                } else {
+                    //已登陆根据用户ID生成二维码显示
+                    MyQrCodeDialog dialog = new MyQrCodeDialog(mContext);
+                    dialog.show();
+                }
+                break;
         }
     }
 
     //发送版本检查请求
-    private void checkVersion(){
+    private void checkVersion() {
         RequestCenter.checkUpdate(new DisposeDataListener() {
 
             //若是指定了class，则object是对应的class，否则为string
             @Override
             public void onSuccess(Object responseObj) {
-                final UpdateModel updateModel = (UpdateModel)responseObj;
-                LogUtils.d("MineFragment","version online is--->"+updateModel.data.currentVersion);
-                LogUtils.d("MineFragment","version local is--->"+Util.getVersionCode(mContext));
-                if(Util.getVersionCode(mContext) < updateModel.data.currentVersion){
+                final UpdateModel updateModel = (UpdateModel) responseObj;
+                LogUtils.d("MineFragment", "version online is--->" + updateModel.data.currentVersion);
+                LogUtils.d("MineFragment", "version local is--->" + Util.getVersionCode(mContext));
+                if (Util.getVersionCode(mContext) < updateModel.data.currentVersion) {
 
                     //说明有新版本，需要弹出对话框
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle("当前版本号："+Util.getVersionName(mContext)+"  您有新版本:")
+                    builder.setTitle("当前版本号：" + Util.getVersionName(mContext) + "  您有新版本:")
                             .setMessage(updateModel.data.whatsNew)
                             .setPositiveButton("安装", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     //点击安装后的回调事件,实际上就是启动更新服务
                                     mContext.startService(new Intent(mContext, UpdateService.class));
-                                    Toast.makeText(mContext,"正在后台下载",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mContext, "正在后台下载", Toast.LENGTH_SHORT).show();
                                 }
                             })
                             .setNegativeButton("下次再说", null)
                             .show();
 
-                }else{
+                } else {
                     //没有新版本
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setTitle("已经是最新版本！")
-                            .setMessage("当前版本： v"+ Util.getVersionName(mContext))
-                            .setPositiveButton("好的",null)
+                            .setMessage("当前版本： v" + Util.getVersionName(mContext))
+                            .setPositiveButton("好的", null)
                             .show();
 
                 }
@@ -170,8 +184,8 @@ public class MineFragment extends BaseFragment implements OnClickListener{
 
             @Override
             public void onFailure(Object reasonObj) {
-                LogUtils.e("MineFragment","更新请求失败");
-                Toast.makeText(mContext,"请求失败，请重试",Toast.LENGTH_SHORT).show();
+                LogUtils.e("MineFragment", "更新请求失败");
+                Toast.makeText(mContext, "请求失败，请重试", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -179,10 +193,10 @@ public class MineFragment extends BaseFragment implements OnClickListener{
     private void registerLoginBroadcast() {
         IntentFilter filter = new IntentFilter(LoginActivity.LOGIN_ACTION);
         LocalBroadcastManager.getInstance(mContext).
-                registerReceiver(loginBroadcastReceiver,filter);
+                registerReceiver(loginBroadcastReceiver, filter);
     }
 
-    private void unRegisterLoginBroadcast(){
+    private void unRegisterLoginBroadcast() {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(loginBroadcastReceiver);
     }
 
@@ -193,13 +207,14 @@ public class MineFragment extends BaseFragment implements OnClickListener{
         @Override
         public void onReceive(Context context, Intent intent) {
             if (UserManager.getInstance().hasLogined()) {
+                Toast.makeText(mContext,"欢迎回来！ "+UserManager.getInstance().getUser().data.name,Toast.LENGTH_SHORT);
                 //更新我们的fragment
                 if (mLoginedLayout.getVisibility() == View.GONE) {
                     mLoginLayout.setVisibility(View.GONE);
                     mLoginedLayout.setVisibility(View.VISIBLE);
                     mUserNameView.setText(UserManager.getInstance().getUser().data.name);
                     mTickView.setText(UserManager.getInstance().getUser().data.tick);
-                    Log.d(TAG, "onReceive: "+UserManager.getInstance().getUser().data.photoUrl);
+                    Log.d(TAG, "onReceive: " + UserManager.getInstance().getUser().data.photoUrl);
                     ImageLoaderManger.getInstance(mContext).displayImage(mUserPhotoView, UserManager.getInstance().getUser().data.photoUrl);
                 }
             }

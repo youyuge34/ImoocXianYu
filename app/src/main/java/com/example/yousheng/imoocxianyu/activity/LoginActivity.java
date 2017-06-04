@@ -103,6 +103,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 //                DialogManager.getInstnce().dismissProgressDialog();
 //            }
 //        }).start();
+
         //发送登陆的网络请求
         RequestCenter.loginIn(mUser, mPassword, new DisposeDataListener() {
             @Override
@@ -117,7 +118,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 //发送本地广播
                 sendLoginBroadcast();
                 LogUtils.d(TAG,"loginIn()-->"+mUser.data.name);
-                Toast.makeText(LoginActivity.this,"欢迎回来！ "+mUser.data.name,Toast.LENGTH_SHORT);
+
 
                 finish();
             }
