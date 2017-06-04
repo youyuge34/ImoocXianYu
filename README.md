@@ -1,3 +1,4 @@
 # ImoocXianYu
-慕课网-组件化开发完整AndroidApp的代码示例，注释丰富
-http://coding.imooc.com/learn/list/84.html
+软件项目：《漫尤——动漫资讯综合App》，注释丰富
+特点是封装了视频自动播放（mediaPlayer+textureView）的sdk，
+并且在组件封装上下了很大功夫

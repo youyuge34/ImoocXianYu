@@ -12,15 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.yousheng.imoocsdk.constant.LogUtils;
-import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
 import com.example.yousheng.imoocxianyu.R;
 import com.example.yousheng.imoocxianyu.activity.base.BaseActivity;
 import com.example.yousheng.imoocxianyu.manager.DialogManager;
-import com.example.yousheng.imoocxianyu.manager.UserManager;
 import com.example.yousheng.imoocxianyu.module.PushMessage;
-import com.example.yousheng.imoocxianyu.module.user.User;
-import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
 import com.example.yousheng.imoocxianyu.view.associatemail.MailBoxAssociateTokenizer;
 import com.example.yousheng.imoocxianyu.view.associatemail.MailBoxAssociateView;
 
@@ -92,44 +87,44 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         //显示进度圈旋转
         DialogManager.getInstnce().showProgressDialog(this);
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(5000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                DialogManager.getInstnce().dismissProgressDialog();
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                DialogManager.getInstnce().dismissProgressDialog();
+            }
+        }).start();
 
         //发送登陆的网络请求
-        RequestCenter.loginIn(mUser, mPassword, new DisposeDataListener() {
-            @Override
-            public void onSuccess(Object responseObj) {
-                //关闭进度圈
-                DialogManager.getInstnce().dismissProgressDialog();
-
-                //储存用户信息
-                User mUser = (User) responseObj;
-                UserManager.getInstance().setUser(mUser);
-
-                //发送本地广播
-                sendLoginBroadcast();
-                LogUtils.d(TAG,"loginIn()-->"+mUser.data.name);
-
-
-                finish();
-            }
-
-            @Override
-            public void onFailure(Object reasonObj) {
-                Toast.makeText(LoginActivity.this, "登陆失败！", Toast.LENGTH_SHORT);
-                //关闭进度圈
-                DialogManager.getInstnce().dismissProgressDialog();
-            }
-        });
+//        RequestCenter.loginIn(mUser, mPassword, new DisposeDataListener() {
+//            @Override
+//            public void onSuccess(Object responseObj) {
+//                //关闭进度圈
+//                DialogManager.getInstnce().dismissProgressDialog();
+//
+//                //储存用户信息
+//                User mUser = (User) responseObj;
+//                UserManager.getInstance().setUser(mUser);
+//
+//                //发送本地广播
+//                sendLoginBroadcast();
+//                LogUtils.d(TAG,"loginIn()-->"+mUser.data.name);
+//
+//
+//                finish();
+//            }
+//
+//            @Override
+//            public void onFailure(Object reasonObj) {
+//                Toast.makeText(LoginActivity.this, "登陆失败！", Toast.LENGTH_SHORT);
+//                //关闭进度圈
+//                DialogManager.getInstnce().dismissProgressDialog();
+//            }
+//        });
 
 
     }
