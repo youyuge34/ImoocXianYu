@@ -203,16 +203,22 @@ public class CourseAdapter extends BaseAdapter {
 
                 //因为会布局回收复用，所以要先清空原先的图片布局
                 mViewHolder.mProductLayout.removeAllViews();
+
                 //动态遍历添加imageview进入水平scrollview中
-                for (String url : value.url) {
-                    mViewHolder.mProductLayout.addView(createImageView(url));
+                for (int i=0;i<value.url.size();i++) {
+                    ImageView image = createImageView(value.url.get(i));
+                    mViewHolder.mProductLayout.addView(image);
+
+                    //为每张图添加点击事件，可以跳转到大图滑动浏览
+                    final int finalI = i;
+                    image.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PhotoViewActivity.newInstance(mContext,value.url, finalI);
+                        }
+                    });
                 }
-                mViewHolder.mProductLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PhotoViewActivity.newInstance(mContext,value.url);
-                    }
-                });
+
 
                 break;
             case CARD_TYPE_TWO:
