@@ -2,7 +2,6 @@ package com.example.yousheng.imoocxianyu.adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,6 +14,7 @@ import uk.co.senab.photoview.PhotoView;
 
 /**
  * Created by yousheng on 17/5/7.
+ * @function 首页轮播器的adapter
  */
 
 public class PhotoPageAdapter extends PagerAdapter {

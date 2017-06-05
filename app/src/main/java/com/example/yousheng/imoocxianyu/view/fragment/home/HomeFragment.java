@@ -16,11 +16,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.yousheng.imoocsdk.constant.LogUtils;
 import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
 import com.example.yousheng.imoocxianyu.R;
+import com.example.yousheng.imoocxianyu.activity.PhotoViewActivity;
 import com.example.yousheng.imoocxianyu.adapter.CourseAdapter;
 import com.example.yousheng.imoocxianyu.constant.Constant;
 import com.example.yousheng.imoocxianyu.module.recommand.BaseRecommandModel;
+import com.example.yousheng.imoocxianyu.module.recommand.RecommandBodyValue;
 import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
 import com.example.yousheng.imoocxianyu.view.home.HomeHeaderLayout;
@@ -178,7 +181,13 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        //要减去列表头部个数
+        RecommandBodyValue value = (RecommandBodyValue) mAdapter.getItem(position - mListView.getHeaderViewsCount());
+        if (value.type != 0) {
+            //若非视频，则启动滑动大图活动
+            LogUtils.d(TAG,"onItemClick--->"+value.url.size());
+            PhotoViewActivity.newInstance(mContext,value.url);
+        }
     }
 
     @Override

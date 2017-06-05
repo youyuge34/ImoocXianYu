@@ -1,9 +1,9 @@
 package com.example.yousheng.imoocxianyu.activity;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,7 +40,7 @@ public class HomeActivity extends BaseActivity  implements View.OnClickListener{
 
         //添加默认要显示的fragment,一般先写好commit方法，再去写过程，怕忘记
         mHomeFragment = new HomeFragment();
-        fm=getSupportFragmentManager();
+        fm=getFragmentManager();
         FragmentTransaction fragmentTransaction=fm.beginTransaction();
         /**
          * fragment进行动态加载三种方式：

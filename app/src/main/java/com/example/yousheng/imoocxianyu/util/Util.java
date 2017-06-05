@@ -5,6 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.example.yousheng.imoocxianyu.module.recommand.RecommandBodyValue;
 import com.google.zxing.BarcodeFormat;
@@ -114,5 +116,12 @@ public class Util {
             e.printStackTrace();
         }
         return versionName;
+    }
+
+    public static void hideSoftInputMethod(Context context, View v) {
+        /* 隐藏软键盘 */
+        InputMethodManager inputMethodManager = (InputMethodManager) context
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 }

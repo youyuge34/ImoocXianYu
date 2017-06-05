@@ -19,6 +19,7 @@ import com.example.yousheng.imoocsdk.core.video.VideoAdContext;
 import com.example.yousheng.imoocsdk.imageloader.ImageLoaderManger;
 import com.example.yousheng.imoocsdk.util.Utils;
 import com.example.yousheng.imoocxianyu.R;
+import com.example.yousheng.imoocxianyu.activity.PhotoViewActivity;
 import com.example.yousheng.imoocxianyu.module.recommand.RecommandBodyValue;
 import com.example.yousheng.imoocxianyu.util.Util;
 import com.google.gson.Gson;
@@ -101,7 +102,7 @@ public class CourseAdapter extends BaseAdapter {
         //获取item种类
         int type = getItemViewType(position);
         //获取当前位置item的服务器数据
-        RecommandBodyValue value = mData.get(position);
+        final RecommandBodyValue value = mData.get(position);
 
         //若缓存布局为空，则开始新建
         if (convertView == null) {
@@ -117,6 +118,7 @@ public class CourseAdapter extends BaseAdapter {
                     mViewHolder.mFromView = (TextView) convertView.findViewById(R.id.item_from_view);
                     mViewHolder.mZanView = (TextView) convertView.findViewById(R.id.item_zan_view);
                     mViewHolder.mProductLayout = (LinearLayout) convertView.findViewById(R.id.product_photo_layout);
+
                     break;
                 case CARD_TYPE_TWO:
                     mViewHolder = new ViewHolder();
@@ -205,6 +207,12 @@ public class CourseAdapter extends BaseAdapter {
                 for (String url : value.url) {
                     mViewHolder.mProductLayout.addView(createImageView(url));
                 }
+                mViewHolder.mProductLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PhotoViewActivity.newInstance(mContext,value.url);
+                    }
+                });
 
                 break;
             case CARD_TYPE_TWO:

@@ -1,9 +1,9 @@
 package com.example.yousheng.imoocxianyu.view.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 
 import com.example.yousheng.imoocxianyu.constant.Constant;
