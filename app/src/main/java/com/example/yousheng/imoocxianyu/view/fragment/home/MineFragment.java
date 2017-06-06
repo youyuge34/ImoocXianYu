@@ -28,6 +28,7 @@ import com.example.yousheng.imoocxianyu.manager.UserManager;
 import com.example.yousheng.imoocxianyu.module.update.UpdateModel;
 import com.example.yousheng.imoocxianyu.network.http.RequestCenter;
 import com.example.yousheng.imoocxianyu.service.update.UpdateService;
+import com.example.yousheng.imoocxianyu.share.ShareManager;
 import com.example.yousheng.imoocxianyu.util.Util;
 import com.example.yousheng.imoocxianyu.view.MyQrCodeDialog;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
@@ -141,6 +142,10 @@ public class MineFragment extends BaseFragment implements OnClickListener {
                     dialog.show();
                 }
                 break;
+
+            case R.id.share_imooc_view:
+                ShareManager.getInstance().showShare(mContext);
+                break;
         }
     }
 
@@ -190,6 +195,8 @@ public class MineFragment extends BaseFragment implements OnClickListener {
         });
     }
 
+
+
     private void registerLoginBroadcast() {
         IntentFilter filter = new IntentFilter(LoginActivity.LOGIN_ACTION);
         LocalBroadcastManager.getInstance(mContext).
@@ -199,6 +206,7 @@ public class MineFragment extends BaseFragment implements OnClickListener {
     private void unRegisterLoginBroadcast() {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(loginBroadcastReceiver);
     }
+
 
     /**
      * 接收登陆成功后发送来的消息，并更新UI

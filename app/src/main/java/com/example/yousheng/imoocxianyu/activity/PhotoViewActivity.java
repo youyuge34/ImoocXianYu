@@ -13,6 +13,7 @@ import com.example.yousheng.imoocsdk.util.Utils;
 import com.example.yousheng.imoocxianyu.R;
 import com.example.yousheng.imoocxianyu.activity.base.BaseActivity;
 import com.example.yousheng.imoocxianyu.adapter.PhotoPageAdapter;
+import com.example.yousheng.imoocxianyu.share.ShareManager;
 import com.example.yousheng.imoocxianyu.util.Util;
 
 import java.util.ArrayList;
@@ -105,6 +106,11 @@ public class PhotoViewActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-
+        switch(v.getId()){
+            case R.id.share_view:
+                ShareManager.getInstance().showShare(this);
+                break;
+        }
     }
+
 }

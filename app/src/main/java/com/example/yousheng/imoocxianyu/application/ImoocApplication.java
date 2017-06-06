@@ -2,7 +2,7 @@ package com.example.yousheng.imoocxianyu.application;
 
 import android.app.Application;
 
-import cn.sharesdk.framework.ShareSDK;
+import com.example.yousheng.imoocxianyu.share.ShareManager;
 
 /**
  * Created by yousheng on 17/5/4.
@@ -22,7 +22,7 @@ public class ImoocApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mApplication=this;
-        ShareSDK.initSDK(this);
+        ShareManager.initSDK(this);
     }
 
     public static ImoocApplication getInstance(){
