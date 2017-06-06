@@ -2,6 +2,8 @@ package com.example.yousheng.imoocxianyu.application;
 
 import android.app.Application;
 
+import cn.sharesdk.framework.ShareSDK;
+
 /**
  * Created by yousheng on 17/5/4.
  * @function 1.整个程序的入口
@@ -20,6 +22,7 @@ public class ImoocApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mApplication=this;
+        ShareSDK.initSDK(this);
     }
 
     public static ImoocApplication getInstance(){
