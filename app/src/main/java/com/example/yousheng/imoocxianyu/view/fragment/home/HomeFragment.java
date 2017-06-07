@@ -9,6 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -134,7 +137,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,A
                 }
             });
 
-
+            //设置item进入时候的动画
+            Animation animation = AnimationUtils.loadAnimation(mContext,R.anim.anim_item);
+            LayoutAnimationController controller = new LayoutAnimationController(animation);
+//            controller.setDelay(0.5f);
+            controller.setOrder(LayoutAnimationController.ORDER_NORMAL);
+            mListView.setLayoutAnimation(controller);
 
         }
     }
