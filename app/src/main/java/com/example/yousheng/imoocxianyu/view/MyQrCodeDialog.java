@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -48,12 +50,27 @@ public class MyQrCodeDialog extends Dialog {
         mPhotoView = (CircleImageView) findViewById(R.id.photo_view);
         mTickView = (TextView) findViewById(R.id.tick_view);
         mCloseView = (TextView) findViewById(R.id.close_view);
+
+
+        //给关闭按钮设置动画
+        RotateAnimation rotateAnimation = new RotateAnimation(0,90f, Animation.RELATIVE_TO_SELF,0.5f, Animation.RELATIVE_TO_SELF,0.5f);
+        rotateAnimation.setStartOffset(500);
+        rotateAnimation.setDuration(600);
+        rotateAnimation.setInterpolator(mContext,android.R.anim.bounce_interpolator);
+//        rotateAnimation.setRepeatCount(2);
+        rotateAnimation.setFillAfter(false);
+//        rotateAnimation.setRepeatMode(Animation.REVERSE);
+        mCloseView.startAnimation(rotateAnimation);
+
         mCloseView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
+
+//        Window window = getWindow();
+//        window.setWindowAnimations(R.style.Anim_Dialog1);
 
 
         String name = UserManager.getInstance().getUser().data.name;

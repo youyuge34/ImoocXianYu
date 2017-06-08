@@ -1,5 +1,7 @@
 package com.example.yousheng.imoocxianyu.view.fragment.home;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.BounceInterpolator;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +26,7 @@ import android.widget.Toast;
 import com.example.yousheng.imoocsdk.constant.LogUtils;
 import com.example.yousheng.imoocsdk.imageloader.ImageLoaderManger;
 import com.example.yousheng.imoocsdk.okhttp.listener.DisposeDataListener;
+import com.example.yousheng.imoocsdk.util.Utils;
 import com.example.yousheng.imoocxianyu.R;
 import com.example.yousheng.imoocxianyu.activity.LoginActivity;
 import com.example.yousheng.imoocxianyu.activity.SettingActivity;
@@ -32,6 +38,8 @@ import com.example.yousheng.imoocxianyu.share.ShareManager;
 import com.example.yousheng.imoocxianyu.util.Util;
 import com.example.yousheng.imoocxianyu.view.MyQrCodeDialog;
 import com.example.yousheng.imoocxianyu.view.fragment.BaseFragment;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -59,6 +67,11 @@ public class MineFragment extends BaseFragment implements OnClickListener {
     private TextView mShareView;
     private TextView mQrCodeView;
     private TextView mUpdateView;
+    //扇形菜单按钮
+    private int res[] ={R.id.circle_menu_button_1,R.id.circle_menu_button_2,R.id.circle_menu_button_3,R.id.circle_menu_button_4,R.id.circle_menu_button_5};
+    private ArrayList<ImageView> imageViews = new ArrayList<>();
+    //菜单是否展开的flag
+    private boolean mFlag = false;
 
     //登陆广播的广播接收器
     private LoginBroadcastReceiver loginBroadcastReceiver =
@@ -107,6 +120,14 @@ public class MineFragment extends BaseFragment implements OnClickListener {
 
         mUpdateView = (TextView) mContentView.findViewById(R.id.update_view);
         mUpdateView.setOnClickListener(this);
+
+
+        //扇形菜单按钮
+        for (int i = 0; i < res.length; i++) {
+            ImageView imageView = (ImageView) mContentView.findViewById(res[i]);
+            imageView.setOnClickListener(this);
+            imageViews.add(imageView);
+        }
     }
 
     @Override
@@ -146,7 +167,67 @@ public class MineFragment extends BaseFragment implements OnClickListener {
             case R.id.share_imooc_view:
                 ShareManager.getInstance().showShare(mContext);
                 break;
+
+            case R.id.circle_menu_button_1:
+                if (mFlag == false){
+                    showEnterAnim(100);
+                }else {
+                    showExitAnim(100);
+                }
+                break;
+
+            default:
+                Toast.makeText(mContext,"id = "+v.getId(),Toast.LENGTH_SHORT).show();
+                break;
         }
+    }
+
+    //显示扇形菜单
+    private void showEnterAnim(int dp) {
+        for (int i = 1; i < res.length; i++) {
+            AnimatorSet set = new AnimatorSet();
+            double x = -Math.cos(0.5/(res.length-2)*(i-1)*Math.PI)* Utils.dip2px(mContext,dp);
+            double y = -Math.sin(0.5/(res.length-2)*(i-1)*Math.PI)* Utils.dip2px(mContext,dp);
+            set.playTogether(
+                    ObjectAnimator.ofFloat(imageViews.get(i),"translationX",(float)(x*0.25),(float)x),
+                    ObjectAnimator.ofFloat(imageViews.get(i),"translationY",(float)(y*0.25),(float)y)
+                    ,ObjectAnimator.ofFloat(imageViews.get(i),"alpha",0,1).setDuration(2000)
+            );
+            set.setInterpolator(new BounceInterpolator());
+            set.setDuration(500).setStartDelay(100*i);
+            set.start();
+        }
+
+        //转动本身
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(imageViews.get(0),"rotation",0,45).setDuration(300);
+        rotate.setInterpolator(new BounceInterpolator());
+        rotate.start();
+
+        mFlag = true;
+    }
+
+    //关闭扇形菜单动画
+    private void showExitAnim(int dp) {
+        for (int i = 1; i < res.length; i++) {
+            AnimatorSet set = new AnimatorSet();
+            double x = -Math.cos(0.5/(res.length-2)*(i-1)*Math.PI)* Utils.dip2px(mContext,dp);
+            double y = -Math.sin(0.5/(res.length-2)*(i-1)*Math.PI)* Utils.dip2px(mContext,dp);
+            set.playTogether(
+                    ObjectAnimator.ofFloat(imageViews.get(i),"translationX",(float)x,(float)(x*0.25)),
+                    ObjectAnimator.ofFloat(imageViews.get(i),"translationY",(float)y,(float)(y*0.25))
+                    ,ObjectAnimator.ofFloat(imageViews.get(i),"alpha",1,0).setDuration(1000)
+            );
+            set.setInterpolator(new AccelerateInterpolator());
+            set.setDuration(300).setStartDelay(100*i);
+            set.start();
+        }
+
+        //转动本身
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(imageViews.get(0),"rotation",45,0).setDuration(300);
+        rotate.setInterpolator(new BounceInterpolator());
+        rotate.start();
+
+        mFlag = false;
     }
 
     //发送版本检查请求

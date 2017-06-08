@@ -18,7 +18,12 @@
     <style name="dialog_no_title" parent="Theme.AppCompat.Dialog">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/Anim.Dialog1</item>
+
     </style>
 
-
+    <style name="Anim.Dialog1" parent="Animation.AppCompat.Dialog">
+        <item name="android:windowEnterAnimation">@anim/actionsheet_in</item>
+        <item name="android:windowExitAnimation">@anim/actionsheet_out</item>
+    </style>
 </resources>
