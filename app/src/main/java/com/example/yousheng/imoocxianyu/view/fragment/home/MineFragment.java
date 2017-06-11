@@ -16,8 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -217,7 +217,7 @@ public class MineFragment extends BaseFragment implements OnClickListener {
                     ObjectAnimator.ofFloat(imageViews.get(i),"translationY",(float)y,(float)(y*0.25))
                     ,ObjectAnimator.ofFloat(imageViews.get(i),"alpha",1,0).setDuration(1000)
             );
-            set.setInterpolator(new AccelerateInterpolator());
+            set.setInterpolator(new DecelerateInterpolator());
             set.setDuration(300).setStartDelay(100*i);
             set.start();
         }
